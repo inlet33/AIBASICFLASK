@@ -1,0 +1,34 @@
+{% extends "layouts/layout.html"%}
+{%block content%}
+
+<div class="container">
+    <h3 class="text-center">Subject</h3>
+    <a href="/addsubject" class="btn btn-primary btn-sm float-right m-3">Add Subject</a>
+    <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Code</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {% for subject in subjects:%}
+                <th scope="row">1</th>
+                <td>{{subject.name}}</td>
+                <td>{{subject.code}}</td>
+                <td>
+                  <button class="btn btn-primary btn-sm">Update</button>
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+                {%endfor%}
+              </tr>
+             
+            </tbody>
+          </table>
+    
+</div>
+
+{%endblock%}

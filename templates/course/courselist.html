@@ -1,0 +1,35 @@
+{% extends "layouts/layout.html"%}
+{%block content%}
+
+<div class="container">
+    <h3 class="text-center">Course</h3>
+    <a href="/addcourse" class="btn btn-primary btn-sm float-right m-3">Add Course</a>
+    <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Code</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {% for course in courses:%}
+                <th scope="row">1</th>
+                <td>{{course.name}}</td>
+                <td>{{course.code}}</td>
+                <td>
+                  <button class="btn btn-primary btn-sm">Update</button>
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+                {%endfor%}
+              </tr>
+             
+              
+            </tbody>
+          </table>
+    
+</div>
+
+{%endblock%}

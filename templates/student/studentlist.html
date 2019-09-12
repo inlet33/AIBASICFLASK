@@ -1,0 +1,36 @@
+{% extends "layouts/layout.html"%}
+{%block content%}
+
+<div class="container">
+    <h3 class="text-center">Student</h3>
+    <a href="/addstudent" class="btn btn-primary btn-sm float-right m-3">Add Student</a>
+    <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">Address</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students:%}
+              <tr>
+                <th scope="row">1</th>
+                <td>{{student.name}}</td>
+                <td>{{student.age}}</td>
+                <td>{{student.address}}</td>
+                <td>
+                  <button class="btn btn-primary btn-sm">Update</button>
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+              </tr>
+              {%endfor%}
+
+              
+            </tbody>
+          </table>
+    
+</div>
+{%endblock%}

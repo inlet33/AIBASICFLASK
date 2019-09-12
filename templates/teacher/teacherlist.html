@@ -1,0 +1,36 @@
+{% extends "layouts/layout.html"%}
+{%block content%}
+
+<div class="container">
+    <h3 class="text-center">Teacher</h3>
+    <a href="/addteacher" class="btn btn-primary btn-sm float-right m-3">Add Teacher</a>
+    <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">Address</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers:%}
+                <tr>
+                  <th scope="row">1</th>
+                  <td>{{teacher.name}}</td>
+                  <td>{{teacher.age}}</td>
+                  <td>{{teacher.address}}</td>
+                  <td>
+                    <button class="btn btn-primary btn-sm">Update</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                  </td>
+                </tr>
+                {%endfor%}
+
+            </tbody>
+          </table>
+    
+</div>
+
+{%endblock%}
