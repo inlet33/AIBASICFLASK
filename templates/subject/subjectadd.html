@@ -1,16 +1,15 @@
 {% extends "layouts/layout.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
 {%block content%}
 
 <div class="container">
     <h3 class="text-center">Subject Add</h3>
     <div class="row mt-4">
         <div class="col-4 offset-4 text-center">
-            <from action="">
-                <label for="">Subject name</label>
-                <input type="text" class="form-control">
-                <label for="">Subject Code</label>
-                <input type="text" class="form-control">
-      
+            <form action="" method ="POST">
+                    {{form.hidden_tag()}}
+                    {{wtf.form_field(form.subjectname)}}
+                    {{wtf.form_field(form.subjectcode)}}
                 <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
 
             </from>

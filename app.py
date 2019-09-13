@@ -1,6 +1,37 @@
-from flask import Flask,render_template
+from flask import Flask,render_template, request
+from flask_wtf import FlaskForm
+from flask_bootstrap import Bootstrap
+from wtforms import StringField, PasswordField,BooleanField,SelectField
+import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+bootstrap = Bootstrap(app)
+
+class StudentForm(FlaskForm):
+    studentname = StringField("Student Name")
+    studentage = StringField("Student Age")
+    studentaddress = StringField("Student Adress")
+    studentyear = SelectField("Student Year LVL",choices=[('1','1st Year'),('2','2nd Year'),('3','3rd Year'),('4','4th Year')])
+
+class TeacherForm(FlaskForm):
+    teachername = StringField("Teacher Name")
+    teacherage = StringField("Teacher Age")
+    teacheraddress = StringField("Teacher Adress")
+
+class CourseForm(FlaskForm):
+    coursename = StringField("Course Name")
+    coursecode = StringField("Course Code")
+
+class SubjectForm(FlaskForm):
+    subjectname = StringField("Subject Name")
+    subjectcode = StringField("Subject Code")
+
+class ScheduleForm(FlaskForm):
+    schedulename = StringField("Schedule Name")
+    schedulecode = StringField("Schedule Code")
+
+
 
 @app.route('/')
 def index():
@@ -10,9 +41,15 @@ def index():
 def home():
     return render_template('home.html')
 
-@app.route('/addstudent')
+@app.route('/addstudent', methods= ['GET', 'POST'])
 def addstudent():
-    return render_template('student/studentadd.html')
+    form =StudentForm()
+    if request.method == 'POST':
+        if int(request.form["studentage"]) >= 18:
+            return "welcome to flask {}".format(request.form["studentname"])
+        else:
+            return "you are not allowed {}".format(request.form["studentname"])
+    return render_template('student/studentadd.html',form = form)
 
 @app.route('/student')
 def student():
@@ -24,9 +61,10 @@ def student():
     ]
     return render_template('student/studentlist.html',students = student_list)
 
-@app.route('/addteacher')
+@app.route('/addteacher',methods= ['GET', 'POST'])
 def addteacher():
-    return render_template('teacher/teacheradd.html')
+    form =TeacherForm()
+    return render_template('teacher/teacheradd.html',form = form)
 
 @app.route('/teacher')
 def teacher():
@@ -40,7 +78,8 @@ def teacher():
 
 @app.route('/addschedule')
 def addschedule():
-    return render_template('schedule/scheduleadd.html')
+    form = ScheduleForm()
+    return render_template('schedule/scheduleadd.html',form = form)
 
 @app.route('/schedule')
 def schedule():
@@ -49,7 +88,8 @@ def schedule():
 
 @app.route('/addsubject')
 def addsubject():
-    return render_template('subject/subjectadd.html')
+    form = SubjectForm()
+    return render_template('subject/subjectadd.html',form = form)
 
 @app.route('/subject')
 def subject():
@@ -58,7 +98,8 @@ def subject():
 
 @app.route('/addcourse')
 def addcourse():
-    return render_template('course/courseadd.html')
+    form = CourseForm()
+    return render_template('course/courseadd.html',form = form)
 
 @app.route('/course')
 def course():

@@ -1,20 +1,18 @@
 {% extends "layouts/layout.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
 {%block content%}
 
 <div class="container">
     <h3 class="text-center">Schedule Add</h3>
     <div class="row mt-4">
         <div class="col-4 offset-4 text-center">
-            <from action="">
-                <label for="">Schedule name</label>
-                <input type="text" class="form-control">
-                <label for="">Schedule Code</label>
-                <input type="text" class="form-control">
-      
-                <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
-
-            </from>
-
+                <form action="" method ="POST">
+                        {{form.hidden_tag()}}
+                        {{wtf.form_field(form.schedulename)}}
+                        {{wtf.form_field(form.schedulecode)}}
+                    <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
+    
+                </from>
         </div>
     </div>
 
