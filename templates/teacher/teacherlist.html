@@ -14,16 +14,17 @@
                 <th scope="col">Action</th>
               </tr>
             </thead>
+            
             <tbody>
                 {% for teacher in teachers:%}
                 <tr>
-                  <th scope="row">1</th>
+                  <th scope="row">{{teacher.id}}</th>
                   <td>{{teacher.name}}</td>
                   <td>{{teacher.age}}</td>
                   <td>{{teacher.address}}</td>
                   <td>
-                    <button class="btn btn-primary btn-sm">Update</button>
-                    <button class="btn btn-danger btn-sm">Delete</button>
+                      <a href="/teacherupdate/{{teacher.id}}" class="btn btn-primary btn-sm">Update</a>
+                      <a href="/teacherdelete/{{teacher.id}}" class="btn btn-danger btn-sm">Delete</a>
                   </td>
                 </tr>
                 {%endfor%}

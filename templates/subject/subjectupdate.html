@@ -1,0 +1,22 @@
+{% extends "layouts/layout.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{%block content%}
+<div class="container">
+    <h3 class="text-center">Subject Update</h3>
+    <div class="row mt-4">
+        <div class="col-4 offset-4 text-center">
+            <form action="" method ="POST">
+                <label for="subject_name">Subject Name</label>
+                <input value='{{subject["name"]}}' type="text" class="form-control" name='subject_name'>
+                <label for="student_name">Subject Code</label>
+                <input value='{{subject["code"]}}' type="text" class="form-control" name='subject_code'>
+                <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{%endblock%}

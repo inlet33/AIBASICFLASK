@@ -14,17 +14,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              
                 {% for course in courses:%}
-                <th scope="row">1</th>
+                <tr>
+                <th scope="row">{{course.id}}</th>
                 <td>{{course.name}}</td>
                 <td>{{course.code}}</td>
                 <td>
-                  <button class="btn btn-primary btn-sm">Update</button>
-                  <button class="btn btn-danger btn-sm">Delete</button>
+                    <a href="/courseupdate/{{course.id}}" class="btn btn-primary btn-sm">Update</a>
+                    <a href="/coursedelete/{{course.id}}" class="btn btn-danger btn-sm">Delete</a>
                 </td>
-                {%endfor%}
               </tr>
+                {%endfor%}
+              
              
               
             </tbody>
