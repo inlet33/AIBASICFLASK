@@ -13,6 +13,10 @@ class Student(db.Model): #just difined, it is called at models/__init__.py
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
 
+    @staticmethod
+    def search_student(name):
+        return db.session.query(Student).filter(Student.name == name).all()
+
 class Teacher(db.Model):
 
     __tablename__ = 'teachers'
@@ -26,6 +30,10 @@ class Teacher(db.Model):
 
     schedules = db.relationship("Schedule",back_populates='teachers')
 
+    @staticmethod
+    def search_teacher(name):
+        return db.session.query(Teacher).filter(Teacher.name == name).all()
+
 class Course(db.Model):
 
     __tablename__ = 'courses'
@@ -38,6 +46,17 @@ class Course(db.Model):
 
     schedules = db.relationship("Schedule",back_populates='courses')
 
+    def __init__(self,name,code):
+        self.name = name
+        self.code = code
+
+    def check_course_exist(self,name,code):
+        return db.session.query(Course).filter(Course.name == name).filter(Course.code == code).all()
+
+    @staticmethod
+    def search_course(code):
+        return db.session.query(Course).filter(Course.code == code).all()
+
 class Subject(db.Model):
 
     __tablename__ = 'subject'
@@ -47,6 +66,17 @@ class Subject(db.Model):
     code = db.Column(db.String(45),)
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
+
+    def __init__(self,name,code):
+        self.name = name
+        self.code = code
+
+    def check_subject_exist(self,name,code):
+        return db.session.query(Subject).filter(Subject.name == name).filter(Subject.code == code).all()
+
+    @staticmethod
+    def search_subject(code):
+        return db.session.query(Subject).filter(Subject.code == code).all()
 
 class Schedule(db.Model):
 
@@ -63,3 +93,19 @@ class Schedule(db.Model):
 
     courses =db.relationship("Course",back_populates = 'schedules')
     teachers =db.relationship("Teacher",back_populates = 'schedules')
+
+    def __init__(self,start,end,day,course,teacher):
+        self.start = start
+        self.end = end
+        self.day = day
+        self.course = course
+        self.teacher = teacher
+
+    def check_schedule_exist(self,start,teacher):
+        return db.session.query(Schedule).filter(Schedule.start == start).filter(Schedule.teacher == teacher).all()
+
+    @staticmethod
+    def search_schedule(day):
+        return db.session.query(Schedule).filter(Schedule.day == day).all()
+        #return db.session.query(Schedule).filter(day in Schedule.*).all()
+

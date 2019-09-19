@@ -1,8 +1,9 @@
 from .app import app
 from .database import db
-from flask import Flask,render_template, request,redirect
+from flask import Flask,render_template, request,redirect,flash
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
+from wtforms_components import TimeField,DateField,DateTimeField
 from wtforms import StringField, PasswordField,BooleanField,SelectField,DateTimeField
 import os
 from .models.models import Student,Teacher,Course,Subject,Schedule
@@ -28,12 +29,11 @@ class SubjectForm(FlaskForm):
     subjectcode = StringField("Subject Code")
 
 class ScheduleForm(FlaskForm):
-    schedulestarttime = DateTimeField("Start Time", format='%H:%M:%S')
-    scheduleendtime = DateTimeField("End Time", format='%H:%M:%S')
+    schedulestarttime = TimeField("Start Time")
+    scheduleendtime = TimeField("End Time")
     scheduleday = SelectField("Day",choices=[('M-F','M-F')])
     course = SelectField("Course",choices=[])
     teacher = SelectField("Teacher",choices=[])
- 
 
 
 @app.route('/')
@@ -58,9 +58,12 @@ def addstudent():
         #     return "you are not allowed {}".format(request.form["studentname"])
     return render_template('student/studentadd.html',form = form)
 
-@app.route('/student')
+@app.route('/student', methods=['GET','POST'])
 def student():
     student_list=Student.query.all()
+    if request.method == 'POST':
+        search = Student.search_student(request.form['search'])
+        return render_template('student/studentlist.html',teachers = search)
     return render_template('student/studentlist.html',students = student_list)
 
 @app.route('/studentdelete/<int:student_id>')
@@ -93,9 +96,12 @@ def addteacher():
         return redirect('/teacher')
     return render_template('teacher/teacheradd.html',form = form)
 
-@app.route('/teacher')
+@app.route('/teacher', methods=['GET','POST'])
 def teacher():
     teacher_list= Teacher.query.all()
+    if request.method == 'POST':
+        search = Teacher.search_teacher(request.form['search'])
+        return render_template('teacher/teacherlist.html',teachers = search)
     return render_template('teacher/teacherlist.html',teachers = teacher_list)
 
 @app.route('/teacherdelete/<int:teacher_id>')
@@ -135,14 +141,21 @@ def addschedule():
         day=request.form['scheduleday'],
         course=request.form['course'],
         teacher=request.form['teacher'])
-        db.session.add(schedule)
-        db.session.commit()
-        return redirect('/schedule')
+        check =schedule.check_schedule_exist(request.form['schedulestarttime'],teacher =request.form['teacher'])
+        if len(check) ==0:
+            db.session.add(schedule)
+            db.session.commit()
+            return redirect('/schedule')
+        flash('Schedule already exist','error')
+        return redirect('/addschedule')
     return render_template('schedule/scheduleadd.html',form = form)
 
-@app.route('/schedule')
+@app.route('/schedule', methods=['GET','POST'])
 def schedule():
-    schedule_list= Schedule.query.all()
+    schedule_list= db.session.query(Schedule).join(Course,Course.id ==Schedule.course).all() 
+    if request.method == 'POST':
+        search = Schedule.search_schedule(request.form['search'])
+        return render_template('schedule/schedulelist.html',schedules = search)
     return render_template('schedule/schedulelist.html',schedules = schedule_list)
 
 @app.route('/scheduledelete/<int:schedule_id>')
@@ -172,14 +185,20 @@ def addsubject():
     form = SubjectForm()
     if request.method == 'POST':
         subject = Subject(name=request.form['subjectname'],code=request.form['subjectcode'])
-        db.session.add(subject)
-        db.session.commit()
-        return redirect('/subject')
+        check =subject.check_subject_exist(request.form['subjectname'],request.form['subjectcode'])
+        if len(check) ==0:
+            db.session.add(subject)
+            db.session.commit()
+            return redirect('/subject')
+        return redirect('/addsubject')
     return render_template('subject/subjectadd.html',form = form)
 
-@app.route('/subject')
+@app.route('/subject', methods=['GET','POST'])
 def subject():
     subject_list= Subject.query.all()
+    if request.method == 'POST':
+        search = Subject.search_subject(request.form['search'])
+        return render_template('subject/subjectlist.html',subjects = search)
     return render_template('subject/subjectlist.html',subjects = subject_list)
 
 @app.route('/subjectdelete/<int:subject_id>')
@@ -206,14 +225,20 @@ def addcourse():
     form = CourseForm()
     if request.method == 'POST':
         course = Course(name=request.form['coursename'],code=request.form['coursecode'])
-        db.session.add(course)
-        db.session.commit()
-        return redirect('/course')
+        check =course.check_course_exist(request.form['coursename'],request.form['coursecode'])
+        if len(check) ==0:
+            db.session.add(course)
+            db.session.commit()
+            return redirect('/course')
+        return redirect('/addcourse')
     return render_template('course/courseadd.html',form = form)
 
-@app.route('/course')
+@app.route('/course', methods=['GET','POST'])
 def course():
     course_list= Course.query.all()
+    if request.method == 'POST':
+        search = Course.search_course(request.form['search'])
+        return render_template('course/courselist.html',courses = search)
     return render_template('course/courselist.html',courses = course_list)
 
 @app.route('/coursedelete/<int:course_id>')

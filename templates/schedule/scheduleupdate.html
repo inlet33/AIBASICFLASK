@@ -11,12 +11,12 @@
                 <label for="schedule_end">End Time</label>
                 <input value='{{schedule["end"]}}' type="text" class="form-control" name='schedule_end'>
                 <label for="schedule_day">Day</label>
-                <input value='{{schedule["address"]}}' type="text" class="form-control" name='schedule_day'>
+                <input value='{{schedule["day"]}}' type="text" class="form-control" name='schedule_day'>
                 <label for="schedule_course">Course</label>
-                <input value='{{schedule["course"]}}' type="text" class="form-control" name='schedule_course'>
+                <input value='{{schedule["courses"]["name"]}}' type="text" class="form-control" name='schedule_course'>
                 <label for="schedule_teacher">Teacher</label>
-                <input value='{{schedule["teacher"]}}' type="text" class="form-control" name='schedule_teacher'>
-
+                <input value='{{schedule["teachers"]["name"]}}' type="text" class="form-control" name='schedule_teacher'>
+                
                 <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
 
             </form>

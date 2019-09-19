@@ -3,6 +3,10 @@
 
 <div class="container">
     <h3 class="text-center">Schedule</h3>
+    <form class="row" action="" method="POST">
+      <input type="text" class="form-contral col-10" name="search">
+      <button class="btn btn-info float-right col-2" type="submit">Search</button>
+    </form>
     <a href="/addschedule" class="btn btn-primary btn-sm float-right m-3">Add Schedule</a>
     <table class="table table-striped">
             <thead>
@@ -24,17 +28,15 @@
                 <td>{{schedule.start}}</td>
                 <td>{{schedule.end}}</td>
                 <td>{{schedule.day}}</td>
-                <td>{{schedule.course}}</td>
-                <td>{{schedule.teacher}}</td>
+                <td>{{schedule.courses.name}}</td>
+                <td>{{schedule.teachers.name}}</td>
                 <td>
                     <a href="/scheduleupdate/{{schedule.id}}" class="btn btn-primary btn-sm">Update</a>
                     <a href="/scheduledelete/{{schedule.id}}" class="btn btn-danger btn-sm">Delete</a>
                 </td>
               </tr>
                 {%endfor%}
-              
-             
-              
+                           
             </tbody>
           </table>
     
