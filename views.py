@@ -3,9 +3,9 @@ from .database import db
 from flask import Flask,render_template, request,redirect
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
-from wtforms import StringField, PasswordField,BooleanField,SelectField
+from wtforms import StringField, PasswordField,BooleanField,SelectField,DateTimeField
 import os
-from .models.models import Student,Teacher,Course,Subject
+from .models.models import Student,Teacher,Course,Subject,Schedule
 
 
 class StudentForm(FlaskForm):
@@ -28,9 +28,12 @@ class SubjectForm(FlaskForm):
     subjectcode = StringField("Subject Code")
 
 class ScheduleForm(FlaskForm):
-    schedulename = StringField("Schedule Name")
-    schedulecode = StringField("Schedule Code")
-
+    schedulestarttime = DateTimeField("Start Time", format='%H:%M:%S')
+    scheduleendtime = DateTimeField("End Time", format='%H:%M:%S')
+    scheduleday = SelectField("Day",choices=[('M-F','M-F')])
+    course = SelectField("Course",choices=[])
+    teacher = SelectField("Teacher",choices=[])
+ 
 
 
 @app.route('/')
@@ -80,7 +83,6 @@ def studentupdate(student_id):
 
     return render_template('student/studentupdate.html',student = student)
 
-
 @app.route('/addteacher',methods= ['GET', 'POST'])
 def addteacher():
     form =TeacherForm()
@@ -90,7 +92,6 @@ def addteacher():
         db.session.commit()
         return redirect('/teacher')
     return render_template('teacher/teacheradd.html',form = form)
-
 
 @app.route('/teacher')
 def teacher():
@@ -117,19 +118,54 @@ def teacherupdate(teacher_id):
 
     return render_template('teacher/teacherupdate.html',teacher = teacher)
 
+@app.route('/teacherschedule/<int:teacher_id>')
+def teacherschedule(teacher_id):
+    teacher = Teacher.query.get(teacher_id)
+    
+    return render_template('teacher/teacherschedule.html',teacher = teacher)
 
-
-@app.route('/addschedule')
+@app.route('/addschedule',methods=['GET','POST'])
 def addschedule():
     form = ScheduleForm()
+    form.course.choices = [(course.id,course.name)for course in Course.query.all()]
+    form.teacher.choices = [(teacher.id,teacher.name)for teacher in Teacher.query.all()]
+    if request.method == 'POST':
+        schedule = Schedule(start=request.form['schedulestarttime'],
+        end=request.form['scheduleendtime'],
+        day=request.form['scheduleday'],
+        course=request.form['course'],
+        teacher=request.form['teacher'])
+        db.session.add(schedule)
+        db.session.commit()
+        return redirect('/schedule')
     return render_template('schedule/scheduleadd.html',form = form)
 
 @app.route('/schedule')
 def schedule():
-    schedule_list= []
+    schedule_list= Schedule.query.all()
     return render_template('schedule/schedulelist.html',schedules = schedule_list)
 
+@app.route('/scheduledelete/<int:schedule_id>')
+def scheduledelete(schedule_id):
+    schedule = Schedule.query.get(schedule_id)
+    db.session.delete(schedule)
+    db.session.commit()
+    return redirect('/schedule')
 
+@app.route('/scheduleupdate/<int:schedule_id>',methods=['GET','POST'])
+def scheduleupdate(schedule_id):
+    schedule = Schedule.query.get(schedule_id)
+    
+    if request.method == 'POST':
+        schedule.start = request.form['schedule_start']
+        schedule.end = request.form['schedule_end']
+        schedule.day = request.form['schedule_day']
+        schedule.course = request.form['schedule_course']
+        schedule.teacher = request.form['schedule_teacher']
+        db.session.commit()
+        return redirect('/schedule')
+
+    return render_template('schedule/scheduleupdate.html',schedule = schedule)
 
 @app.route('/addsubject',methods= ['GET', 'POST'])
 def addsubject():
@@ -140,8 +176,6 @@ def addsubject():
         db.session.commit()
         return redirect('/subject')
     return render_template('subject/subjectadd.html',form = form)
-
-
 
 @app.route('/subject')
 def subject():
@@ -200,3 +234,9 @@ def courseupdate(course_id):
         return redirect('/course')
 
     return render_template('course/courseupdate.html',course = course)
+
+@app.route('/courseschedule/<int:course_id>')
+def courseschedule(course_id):
+    course = Course.query.get(course_id)
+    
+    return render_template('course/courseschedule.html',course = course)

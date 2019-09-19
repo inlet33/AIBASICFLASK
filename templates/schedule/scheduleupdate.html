@@ -1,0 +1,29 @@
+{% extends "layouts/layout.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{%block content%}
+<div class="container">
+    <h3 class="text-center">Schedule Update</h3>
+    <div class="row mt-4">
+        <div class="col-4 offset-4 text-center">
+            <form action="" method ="POST">
+                <label for="schedule_start">Start Time</label>
+                <input value='{{schedule["start"]}}' type="text" class="form-control" name='schedule_start'>
+                <label for="schedule_end">End Time</label>
+                <input value='{{schedule["end"]}}' type="text" class="form-control" name='schedule_end'>
+                <label for="schedule_day">Day</label>
+                <input value='{{schedule["address"]}}' type="text" class="form-control" name='schedule_day'>
+                <label for="schedule_course">Course</label>
+                <input value='{{schedule["course"]}}' type="text" class="form-control" name='schedule_course'>
+                <label for="schedule_teacher">Teacher</label>
+                <input value='{{schedule["teacher"]}}' type="text" class="form-control" name='schedule_teacher'>
+
+                <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{%endblock%}

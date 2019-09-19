@@ -8,14 +8,15 @@
         <div class="col-4 offset-4 text-center">
                 <form action="" method ="POST">
                         {{form.hidden_tag()}}
-                        {{wtf.form_field(form.schedulename)}}
-                        {{wtf.form_field(form.schedulecode)}}
+                        {{wtf.form_field(form.schedulestarttime)}}
+                        {{wtf.form_field(form.scheduleendtime)}}
+                        {{wtf.form_field(form.scheduleday)}}
+                        {{wtf.form_field(form.course)}}
+                        {{wtf.form_field(form.teacher)}}
                     <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
     
-                </from>
+                </form>
         </div>
     </div>
-
-    
 </div>
 {%endblock%}
