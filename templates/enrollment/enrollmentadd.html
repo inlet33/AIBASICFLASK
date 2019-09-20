@@ -1,0 +1,34 @@
+{% extends "layouts/layout.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{%block content%}
+
+<div class="container">
+    <h3 class="text-center">Enrollmert Add</h3>
+    {% with errors = get_flashed_messages(category_filter=['error'])%}
+    {% if errors %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <ul>
+            {%- for msg in errors%}
+            <li>{{ msg }}</li>
+            {%endfor -%}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+    <div class="row mt-4">
+        <div class="col-4 offset-4 text-center">
+                <form action="" method ="POST">
+                        {{form.hidden_tag()}}
+                        {{wtf.form_field(form.enrollmentname)}}
+                        {{wtf.form_field(form.enrollmentdate)}}
+                        {{wtf.form_field(form.enrollmentterm)}}
+                    <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
+    
+                </form>
+        </div>
+    </div>
+</div>
+{%endblock%}

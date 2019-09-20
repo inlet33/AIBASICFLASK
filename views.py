@@ -6,7 +6,7 @@ from flask_bootstrap import Bootstrap
 from wtforms_components import TimeField,DateField,DateTimeField
 from wtforms import StringField, PasswordField,BooleanField,SelectField,DateTimeField
 import os
-from .models.models import Student,Teacher,Course,Subject,Schedule
+from .models.models import Student,Teacher,Course,Subject,Schedule,Enrollment
 
 
 class StudentForm(FlaskForm):
@@ -35,6 +35,10 @@ class ScheduleForm(FlaskForm):
     course = SelectField("Course",choices=[])
     teacher = SelectField("Teacher",choices=[])
 
+class EnrollmentForm(FlaskForm):
+    enrollmentname = SelectField("Student Name",choices=[])
+    enrollmentdate = StringField("Schedule Date",choices=[])
+    enrollmentterm = SelectField("Term",choices=[('term 1','term 1'),('term 2','term 2')])
 
 @app.route('/')
 def index():
@@ -262,6 +266,61 @@ def courseupdate(course_id):
 
 @app.route('/courseschedule/<int:course_id>')
 def courseschedule(course_id):
+
     course = Course.query.get(course_id)
     
     return render_template('course/courseschedule.html',course = course)
+
+
+@app.route('/addenrollment',methods= ['GET', 'POST'])
+def addenrollment():
+    form = EnrollmentForm()
+    form.enrollmentname.choices = [(student.id,student.name)for student in Student.query.all()]
+    form.enrollmentdate.choices = [(schedule.id,schedule.start)for schedule in Schedule.query.all()]
+
+    if request.method == 'POST':
+        enrollment = Enrollment(name=request.form['enrollmentname']
+        ,date=request.form['enrollmentdate']
+        ,term=request.form['enrollmentterm'])
+
+        check =enrollment.check_enrollment_exist(request.form['enrollmentname'],request.form['enrollmentterm'])
+        if len(check) ==0:
+            db.session.add(enrollment)
+            db.session.commit()
+            return redirect('/enrollment')
+        return redirect('/addenrollment')
+    return render_template('enrollment/enrollmentadd.html',form = form)
+
+@app.route('/enrollment', methods=['GET','POST'])
+def enrollment():
+    enrollment_list= Enrollment.query.join(Student,Student.id ==Enrollment.name).all() 
+    if request.method == 'POST':
+        search = Enrollment.search_enrollment(request.form['search'])
+        return render_template('enrollment/enrollmentlist.html',enrollments = search)
+    return render_template('enrollment/enrollmentlist.html',enrollments = enrollment_list)
+
+@app.route('/enrollmentdelete/<int:enrollment_id>')
+def enrollmentdelete(enrollment_id):
+    enrollment = Enrollment.query.get(enrollment_id)
+    db.session.delete(enrollment)
+    db.session.commit()
+    return redirect('/enrollment')
+
+@app.route('/enrollmentupdate/<int:enrollment_id>',methods=['GET','POST'])
+def enrollmentupdate(enrollment_id):
+    enrollment = Enrollment.query.get(enrollment_id)
+    
+    if request.method == 'POST':
+        enrollment.name = request.form['enrollment_name']
+        enrollment.date = request.form['enrollment_date']
+        enrollment.term = request.form['enrollment_term']
+        db.session.commit()
+        return redirect('/enrollment')
+
+    return render_template('enrollment/enrollmentupdate.html',enrollment = enrollment)
+
+@app.route('/enrollmentschedule/<int:enrollment_id>')
+def enrollmentschedule(enrollment_id):
+    enrollment = Enrollment.query.get(enrollment_id)
+    
+    return render_template('enrollment/enrollmentschedule.html',enrollment = enrollment)

@@ -2,9 +2,7 @@ from datetime import datetime
 from AIBASICFLASK.database import db
 from sqlalchemy.orm import relationship
 
-class Student(db.Model): #just difined, it is called at models/__init__.py
-
-    __tablename__ = 'students'
+class Student(db.Model): 
 
     id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(45), nullable = False)
@@ -94,6 +92,7 @@ class Schedule(db.Model):
     courses =db.relationship("Course",back_populates = 'schedules')
     teachers =db.relationship("Teacher",back_populates = 'schedules')
 
+
     def __init__(self,start,end,day,course,teacher):
         self.start = start
         self.end = end
@@ -107,5 +106,28 @@ class Schedule(db.Model):
     @staticmethod
     def search_schedule(day):
         return db.session.query(Schedule).filter(Schedule.day == day).all()
-        #return db.session.query(Schedule).filter(day in Schedule.*).all()
 
+class Enrollment(db.Model):
+
+    __tablename__ = 'enrollment'
+
+    id = db.Column(db.Integer,primary_key = True)
+    name = db.Column(db.String(45)) 
+    date = db.Column(db.String(45))
+    term =db.Column(db.String(45), nullable = False)
+    created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
+    updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
+
+    
+
+    def __init__(self,name,date,term):
+        self.name = name
+        self.date = date
+        self.term = term
+
+    def check_enrollment_exist(self,date,term):
+        return db.session.query(Enrollment).filter(Enrollment.date == date).filter(Enrollment.term == term).all()
+
+    @staticmethod
+    def search_enrollment(term):
+        return db.session.query(Enrollment).filter(Enrollment.term == term).all()
