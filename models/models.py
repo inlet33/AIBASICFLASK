@@ -4,12 +4,16 @@ from sqlalchemy.orm import relationship
 
 class Student(db.Model): 
 
+    __tablename__ = 'students'
+
     id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(45), nullable = False)
     age = db.Column(db.Integer)
     address = db.Column(db.String(245))
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
+
+    enrollments =db.relationship("Enrollment",back_populates = 'students')
 
     @staticmethod
     def search_student(name):
@@ -57,7 +61,7 @@ class Course(db.Model):
 
 class Subject(db.Model):
 
-    __tablename__ = 'subject'
+    __tablename__ = 'subjects'
 
     id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(45), nullable = False)
@@ -78,7 +82,7 @@ class Subject(db.Model):
 
 class Schedule(db.Model):
 
-    __tablename__ = 'schedule'
+    __tablename__ = 'schedules'
 
     id = db.Column(db.Integer,primary_key = True)
     start = db.Column(db.String(45), nullable = False)
@@ -91,6 +95,7 @@ class Schedule(db.Model):
 
     courses =db.relationship("Course",back_populates = 'schedules')
     teachers =db.relationship("Teacher",back_populates = 'schedules')
+    enrollments =db.relationship("Enrollment",back_populates = 'schedules')
 
 
     def __init__(self,start,end,day,course,teacher):
@@ -109,16 +114,17 @@ class Schedule(db.Model):
 
 class Enrollment(db.Model):
 
-    __tablename__ = 'enrollment'
+    __tablename__ = 'enrollments'
 
     id = db.Column(db.Integer,primary_key = True)
-    name = db.Column(db.String(45)) 
-    date = db.Column(db.String(45))
+    name = db.Column(db.String(45),db.ForeignKey('students.id')) 
+    date = db.Column(db.String(45),db.ForeignKey('schedules.id'))
     term =db.Column(db.String(45), nullable = False)
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
 
-    
+    students =db.relationship("Student",back_populates = 'enrollments')
+    schedules =db.relationship("Schedule",back_populates = 'enrollments')
 
     def __init__(self,name,date,term):
         self.name = name
@@ -129,5 +135,6 @@ class Enrollment(db.Model):
         return db.session.query(Enrollment).filter(Enrollment.date == date).filter(Enrollment.term == term).all()
 
     @staticmethod
-    def search_enrollment(term):
-        return db.session.query(Enrollment).filter(Enrollment.term == term).all()
+    def search_enrollment(name):
+        return db.session.query(Enrollment).filter(Enrollment.name == name).all()
+

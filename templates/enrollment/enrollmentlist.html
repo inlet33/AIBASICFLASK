@@ -24,7 +24,7 @@
                 <tr>
                 <th scope="row">{{enrollment.id}}</th>
                 <td>{{enrollment.students.name}}</td>
-                <td>{{enrollment.date}}</td>
+                <td>{{enrollment.schedules.start + "-" +enrollment.schedules.end + " " + enrollment.schedules.day}}</td>
                 <td>{{enrollment.term}}</td>
                 <td>
                     <a href="/enrollmentupdate/{{enrollment.id}}" class="btn btn-primary btn-sm">Update</a>

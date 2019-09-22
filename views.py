@@ -37,7 +37,7 @@ class ScheduleForm(FlaskForm):
 
 class EnrollmentForm(FlaskForm):
     enrollmentname = SelectField("Student Name",choices=[])
-    enrollmentdate = StringField("Schedule Date",choices=[])
+    enrollmentdate = SelectField("Schedule Date",choices=[])
     enrollmentterm = SelectField("Term",choices=[('term 1','term 1'),('term 2','term 2')])
 
 @app.route('/')
@@ -89,6 +89,12 @@ def studentupdate(student_id):
         return redirect('/student')
 
     return render_template('student/studentupdate.html',student = student)
+
+@app.route('/studentschedule/<int:student_id>')
+def studentschedule(student_id):
+    student = Student.query.get(student_id)
+    
+    return render_template('student/studentschedule.html',student = student)
 
 @app.route('/addteacher',methods= ['GET', 'POST'])
 def addteacher():
@@ -276,7 +282,7 @@ def courseschedule(course_id):
 def addenrollment():
     form = EnrollmentForm()
     form.enrollmentname.choices = [(student.id,student.name)for student in Student.query.all()]
-    form.enrollmentdate.choices = [(schedule.id,schedule.start)for schedule in Schedule.query.all()]
+    form.enrollmentdate.choices = [(schedule.id,schedule.start + "-" + schedule.end + " " +schedule.day)for schedule in Schedule.query.all()]
 
     if request.method == 'POST':
         enrollment = Enrollment(name=request.form['enrollmentname']
@@ -319,8 +325,3 @@ def enrollmentupdate(enrollment_id):
 
     return render_template('enrollment/enrollmentupdate.html',enrollment = enrollment)
 
-@app.route('/enrollmentschedule/<int:enrollment_id>')
-def enrollmentschedule(enrollment_id):
-    enrollment = Enrollment.query.get(enrollment_id)
-    
-    return render_template('enrollment/enrollmentschedule.html',enrollment = enrollment)
