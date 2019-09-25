@@ -1,0 +1,25 @@
+{% extends "layouts/layout.html"%}
+{% import "bootstrap/wtf.html" as wtf%}
+{%block content%}
+<div class="container">
+    <h3 class="text-center">Enrollment Update</h3>
+    <div class="row mt-4">
+        <div class="col-4 offset-4 text-center">
+            <form action="" method ="POST">
+                <label for="enrollment_name">Student Name</label>
+                <input value='{{enrollment["students"]["name"]}}' type="text" class="form-control" name='enrollment_name'>
+                <label for="enrollment_date">Date</label>
+                <input value='{{enrollment["date"]}}' type="text" class="form-control" name='enrollment_date'>
+                <label for="enrollment_term">Term</label>
+                <input value='{{enrollment["term"]}}' type="text" class="form-control" name='enrollment_term'>
+                
+                <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{%endblock%}

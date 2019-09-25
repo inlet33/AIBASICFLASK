@@ -16,6 +16,12 @@
                 <input value='{{schedule["courses"]["name"]}}' type="text" class="form-control" name='schedule_course'>
                 <label for="schedule_teacher">Teacher</label>
                 <input value='{{schedule["teachers"]["name"]}}' type="text" class="form-control" name='schedule_teacher'>
+                <!-- {{schedule.hidden_tag()}}
+                {{wtf.form_field(form.schedulestarttime)}}
+                {{wtf.form_field(form.scheduleendtime)}}
+                {{wtf.form_field(form.scheduleday)}}
+                {{wtf.form_field(form.course)}}
+                {{wtf.form_field(form.teacher)}} -->
                 
                 <button class="btn btn-primary btn-sm mt-4" type="submit">Save</button>
 

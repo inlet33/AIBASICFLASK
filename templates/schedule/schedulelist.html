@@ -15,7 +15,10 @@
                 <th scope="col">Start Time</th>
                 <th scope="col">End Time</th>
                 <th scope="col">Day</th>
-                <th scope="col">Course</th>
+                <th scope="col">Course Section</th>
+                <th scope="col">Course </th>
+                <th scope="col">Subject </th>
+                <th scope="col">Term</th>
                 <th scope="col">Teacher</th>
                 <th scope="col">Action</th>
               </tr>
@@ -28,7 +31,10 @@
                 <td>{{schedule.start}}</td>
                 <td>{{schedule.end}}</td>
                 <td>{{schedule.day}}</td>
-                <td>{{schedule.courses.name}}</td>
+                <td>{{schedule.course_sections.name}}</td>
+                <td>{{schedule.course_sections.courses.name}}</td>
+                <td>{{schedule.subjects.name}}</td>
+                <td>{{schedule.term}}</td>
                 <td>{{schedule.teachers.name}}</td>
                 <td>
                     <a href="/scheduleupdate/{{schedule.id}}" class="btn btn-primary btn-sm">Update</a>

@@ -3,7 +3,7 @@
 {%block content%}
 
 <div class="container">
-    <h3 class="text-center">Enrollmert Add</h3>
+    <h3 class="text-center">Enrollmert Course Section</h3>
     {% with errors = get_flashed_messages(category_filter=['error'])%}
     {% if errors %}
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -22,8 +22,8 @@
         <div class="col-4 offset-4 text-center">
                 <form action="" method ="POST">
                         {{form.hidden_tag()}}
-                        {{wtf.form_field(form.enrollmentname)}}
-                        {{wtf.form_field(form.enrollmentcourse)}}
+                        {{wtf.form_field(form.enrollmentcoursesection)}}
+                        {{wtf.form_field(form.enrollmentterm)}}
                     <button class="btn btn-primary btn-sm mt-4" type="submit">Next</button>
     
                 </form>

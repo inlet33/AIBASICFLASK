@@ -1,0 +1,42 @@
+{% extends "layouts/layout.html"%}
+{%block content%}
+
+<div class="container">
+    <h3 class="text-center">Course Section</h3>
+    <form class="row" action="" method="POST">
+      <input type="text" class="form-contral col-10" name="search">
+      <button class="btn btn-info float-right col-2" type="submit">Search</button>
+    </form>
+    <a href="/addcoursesection" class="btn btn-primary btn-sm float-right m-3">Add Course Section</a>
+    <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Course Section Name</th>
+                <th scope="col">Course Section Code</th>
+                <th scope="col">Course Section Course</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                {% for coursesection in coursesections:%}
+                <tr>
+                <th scope="row">{{coursesection.id}}</th>
+                <td>{{coursesection.name}}</td>
+                <td>{{coursesection.code}}</td>
+                <td>{{coursesection.courses.name}}</td>
+                
+                <td>
+                    <a href="/coursesectionsupdate/{{coursesection.id}}" class="btn btn-primary btn-sm">Update</a>
+                    <a href="/coursesectiondelete/{{coursesection.id}}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+              </tr>
+                {%endfor%}
+                           
+            </tbody>
+          </table>
+    
+</div>
+
+{%endblock%}

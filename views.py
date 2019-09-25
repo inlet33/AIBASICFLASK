@@ -1,18 +1,24 @@
 from .app import app
 from .database import db
-from flask import Flask,render_template, request,redirect,flash
+from flask import Flask,render_template, request,redirect,flash, url_for
 from flask_wtf import FlaskForm
 from flask_bootstrap import Bootstrap
-from wtforms_components import TimeField,DateField,DateTimeField
+from wtforms_components import TimeField,DateField,DateTimeField, SelectMultipleField
 from wtforms import StringField, PasswordField,BooleanField,SelectField,DateTimeField
+from wtforms.validators import InputRequired, Email, Length
 import os
-from .models.models import Student,Teacher,Course,Subject,Schedule,Enrollment
+from .models.models import Student,Teacher,Course,Subject,Schedule,Enrollment,CourseSection
+from wtforms.widgets import ListWidget,CheckboxInput
 
+class MultiCheckBoxField(SelectMultipleField):
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
 
 class StudentForm(FlaskForm):
     studentname = StringField("Student Name")
     studentage = StringField("Student Age")
     studentaddress = StringField("Student Adress")
+    studenttype = SelectField("Type",choices=[('regular','irregular')])
     studentyear = SelectField("Student Year LVL",choices=[('1','1st Year'),('2','2nd Year'),('3','3rd Year'),('4','4th Year')])
 
 class TeacherForm(FlaskForm):
@@ -24,6 +30,11 @@ class CourseForm(FlaskForm):
     coursename = StringField("Course Name")
     coursecode = StringField("Course Code")
 
+class Course_SectionForm(FlaskForm):
+    coursesectionname = StringField("Course Section Name")
+    coursesectioncode = StringField("Course Section Code")
+    coursesectioncourse = SelectField("Course Section Course",choices=[])
+
 class SubjectForm(FlaskForm):
     subjectname = StringField("Subject Name")
     subjectcode = StringField("Subject Code")
@@ -34,11 +45,17 @@ class ScheduleForm(FlaskForm):
     scheduleday = SelectField("Day",choices=[('M-F','M-F')])
     course = SelectField("Course",choices=[])
     teacher = SelectField("Teacher",choices=[])
+    schdulecoursesection = SelectField("Course Section",choices=[])
+    schdulesubject = SelectField("Subject",choices=[])
+    scheduleterm = SelectField("Term",choices=[('term 1','term 1'),('term 2','term 2')])
 
 class EnrollmentForm(FlaskForm):
     enrollmentname = SelectField("Student Name",choices=[])
     enrollmentdate = SelectField("Schedule Date",choices=[])
-    enrollmentterm = SelectField("Term",choices=[('term 1','term 1'),('term 2','term 2')])
+    enrollmentcourse = SelectField("Course",choices=[])
+    enrollmentcoursesection = SelectField("Course Section",choices=[])
+    # #Get the values using choice(schedule_id, subject_name) example:(1, IT)
+    # schedule =MultiCheckBoxField('schdule')
 
 @app.route('/')
 def index():
@@ -52,7 +69,7 @@ def home():
 def addstudent():
     form =StudentForm()
     if request.method == 'POST':
-        student = Student(name=request.form['studentname'],age=request.form['studentage'],address=request.form['studentaddress'])
+        student = Student(name=request.form['studentname'],age=request.form['studentage'],address=request.form['studentaddress'],student_type=request.form['studenttype'])
         db.session.add(student)
         db.session.commit()
         return redirect('/student')
@@ -143,26 +160,30 @@ def teacherschedule(teacher_id):
 @app.route('/addschedule',methods=['GET','POST'])
 def addschedule():
     form = ScheduleForm()
-    form.course.choices = [(course.id,course.name)for course in Course.query.all()]
+    form.schdulecoursesection.choices = [(coursesection.id,coursesection.name)for coursesection in CourseSection.query.all()]
     form.teacher.choices = [(teacher.id,teacher.name)for teacher in Teacher.query.all()]
+    form.schdulesubject.choices = [(subject.id,subject.name)for subject in Subject.query.all()]
+
     if request.method == 'POST':
         schedule = Schedule(start=request.form['schedulestarttime'],
         end=request.form['scheduleendtime'],
         day=request.form['scheduleday'],
-        course=request.form['course'],
+        term = request.form['scheduleterm'],
+        section_id=request.form['schdulecoursesection'],
+        subject_id=request.form['schdulesubject'],
         teacher=request.form['teacher'])
-        check =schedule.check_schedule_exist(request.form['schedulestarttime'],teacher =request.form['teacher'])
-        if len(check) ==0:
-            db.session.add(schedule)
-            db.session.commit()
-            return redirect('/schedule')
-        flash('Schedule already exist','error')
-        return redirect('/addschedule')
+        # check =schedule.check_schedule_exist(request.form['schedulestarttime'],teacher =request.form['teacher'])
+        # if len(check) ==0:
+        db.session.add(schedule)
+        db.session.commit()
+        return redirect('/schedule')
+        # flash('Schedule already exist','error')
+        #return redirect('/addschedule')
     return render_template('schedule/scheduleadd.html',form = form)
 
 @app.route('/schedule', methods=['GET','POST'])
 def schedule():
-    schedule_list= db.session.query(Schedule).join(Course,Course.id ==Schedule.course).all() 
+    schedule_list= db.session.query(Schedule).join(CourseSection,CourseSection.id ==Schedule.section_id).all() 
     if request.method == 'POST':
         search = Schedule.search_schedule(request.form['search'])
         return render_template('schedule/schedulelist.html',schedules = search)
@@ -177,6 +198,30 @@ def scheduledelete(schedule_id):
 
 @app.route('/scheduleupdate/<int:schedule_id>',methods=['GET','POST'])
 def scheduleupdate(schedule_id):
+    # form = ScheduleForm()
+    # schedule = Schedule.query.get(schedule_id)
+    # form.schedulestarttime.data = schedule.start
+    # form.scheduleendtime.data = schedule.end
+    # form.scheduleday.choices = [(schedule.id,schedule.day)for schedule in Schedule.query.all()]
+    # form.course.choices = [(course.id,course.name)for course in Course.query.all()]
+    # form.teacher.choices = [(teacher.id,teacher.name)for teacher in Teacher.query.all()]
+    
+    
+    # if request.method == 'POST':
+    #     schedule = Schedule(start=request.form['schedulestarttime'],
+    #     end=request.form['scheduleendtime'],
+    #     day=request.form['scheduleday'],
+    #     course=request.form['course'],
+    #     teacher=request.form['teacher'])
+    #     check =schedule.check_schedule_exist(request.form['schedulestarttime'],teacher =request.form['teacher'])
+    #     if len(check) ==0:
+    #         db.session.add(schedule)
+    #         db.session.commit()
+    #         return redirect('/schedule')
+    #     flash('Schedule already exist','error')
+    #     return redirect('/addschedule')
+    
+    # return render_template('schedule/scheduleadd.html',form = form)
     schedule = Schedule.query.get(schedule_id)
     
     if request.method == 'POST':
@@ -282,28 +327,41 @@ def courseschedule(course_id):
 def addenrollment():
     form = EnrollmentForm()
     form.enrollmentname.choices = [(student.id,student.name)for student in Student.query.all()]
-    form.enrollmentdate.choices = [(schedule.id,schedule.start + "-" + schedule.end + " " +schedule.day)for schedule in Schedule.query.all()]
+    form.enrollmentcourse.choices = [(course.id,course.name)for course in Course.query.all()]
+    #form.enrollmentdate.choices = [(schedule.id,schedule.start + "-" + schedule.end + " " +schedule.day)for schedule in Schedule.query.all()]
 
     if request.method == 'POST':
-        enrollment = Enrollment(name=request.form['enrollmentname']
-        ,date=request.form['enrollmentdate']
-        ,term=request.form['enrollmentterm'])
-
-        check =enrollment.check_enrollment_exist(request.form['enrollmentname'],request.form['enrollmentterm'])
-        if len(check) ==0:
-            db.session.add(enrollment)
-            db.session.commit()
-            return redirect('/enrollment')
-        return redirect('/addenrollment')
+        course_id = request.form['enrollmentcourse']
+        student_id = request.form['enrollmentname']
+        return redirect(url_for('enrollment_section',course_id=course_id,student_id=student_id))   
     return render_template('enrollment/enrollmentadd.html',form = form)
+
+@app.route('/enrollmentcoursesection', methods = ['GET', 'POST'])
+def enrollment_section():
+    form = EnrollmentForm()
+    course_id = request.args.get('course_id')
+    student_id = request.args.get('student_id')
+    form.enrollmentcoursesection.choices=[(course.id,course.name)for course in CourseSection.query.filter(CourseSection.course_id == course_id).all()]
+    if request.method == 'POST':
+        section_id = request.form['enrollmentcoursesection']
+        term = request.form['enrollmentterm']
+        return redirect(url_for('enrollment_schdeule',course_id=course_id,student_id=student_id,section_id =section_id,term=term ))
+    return render_template('enrollment/enrollmentcoursesection.html',form = form,student_id=student_id)
+
+@app.route('/enrollmentschedule', methods = ['GET', 'POST'])
+def enrollment_schdeule():
+    enrollments = Enrollment(name=request.args.get('student_id'))
+    enrollments.date =Schedule.query.filter(Schedule.section_id == request.args.get('section_id')).all()
+
+    return render_template('enrollment/enrollmentschedule.html',enrollments = enrollments)
 
 @app.route('/enrollment', methods=['GET','POST'])
 def enrollment():
-    enrollment_list= Enrollment.query.join(Student,Student.id ==Enrollment.name).all() 
-    if request.method == 'POST':
-        search = Enrollment.search_enrollment(request.form['search'])
-        return render_template('enrollment/enrollmentlist.html',enrollments = search)
-    return render_template('enrollment/enrollmentlist.html',enrollments = enrollment_list)
+    enrollments= Enrollment.query.join(Student,Student.id ==Enrollment.name).all() 
+    # if request.method == 'POST':
+    #     search = Enrollment.search_enrollment(request.form['search'])
+    #     return render_template('enrollment/enrollmentlist.html',enrollments = search)
+    return render_template('enrollment/enrollmentlist.html',enrollments = enrollments)
 
 @app.route('/enrollmentdelete/<int:enrollment_id>')
 def enrollmentdelete(enrollment_id):
@@ -325,3 +383,35 @@ def enrollmentupdate(enrollment_id):
 
     return render_template('enrollment/enrollmentupdate.html',enrollment = enrollment)
 
+
+@app.route('/addcoursesection',methods= ['GET', 'POST'])
+def addcourse_section():
+    form = Course_SectionForm()
+    form.coursesectioncourse.choices = [(course.id, course.name)for course in Course.query.all()]
+
+    if request.method == 'POST':
+        course_section = CourseSection(name=request.form['coursesectionname'],code=request.form['coursesectioncode'],course_id=request.form['coursesectioncourse'])
+        db.session.add(course_section)
+        db.session.commit()
+        # check =course.check_course_exist(request.form['coursesectionname'],request.form['coursesectionncode'])
+        # if len(check) ==0:
+        #     db.session.add(course_section)
+        #     db.session.commit()
+        return redirect('/course_section')
+        #return redirect('/addcoursesection')
+    return render_template('course_section/course_sectionadd.html',form = form)
+
+@app.route('/course_section', methods=['GET','POST'])
+def course_section():
+    course_section_list= CourseSection.query.all()
+    return render_template('course_section/course_sectionlist.html',coursesections = course_section_list)
+
+@app.route('/coursesectiondelete/<int:coursesections_id>')
+def course_sectiondelete(coursesections_id):
+    course = CourseSection.query.get(coursesections_id)
+    db.session.delete(course)
+    db.session.commit()
+    return redirect('/course_section')
+
+# @app.route('/coursesectionsupdate/<int:course_id>',methods=['GET','POST'])
+# def courseupdate(course_id):
