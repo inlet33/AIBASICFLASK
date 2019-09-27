@@ -3,7 +3,8 @@
 
 <div class="container">
     <h3 class="text-center">Enrollment</h3>
-    
+    {% for enrollments_year in enrollments_years %}
+    <h3 class="">{{enrollments_year.start_year + "-" + enrollments_year.end_year }}</h3>
     <table class="table table-striped">
             <thead>
               <tr>
@@ -17,16 +18,47 @@
             <tbody>
               
                     {% for enrollment in enrollments:%}
+                    {% if enrollment.schedules.term == "term 1"%}
                     <tr>
+                    <td>{{enrollment.schedules.id}}</td>
                     <td>{{enrollment.schedules.teachers.name}}</td>
                     <td>{{enrollment.schedules.subjects.name}}</td>
                     <td>{{enrollment.schedules.start + "-" +enrollment.schedules.end + " " + enrollment.schedules.day}}</td>
-                    
-                  </tr>
+                    <td>{{enrollment.schedules.term}}</td>
+
+                    </tr>
+                    {%endif%}
                     {%endfor%}
             
             </tbody>
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">teacher</th>
+                    <th scope="col">subject</th>
+                    <th scope="col">schedule</th>
+                    <th scope="col">term</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                        {% for enrollment in enrollments:%}
+                        {% if enrollment.schedules.term == "term 2"%}
+                        <tr>
+                        <td>{{enrollment.schedules.id}}</td>
+                        <td>{{enrollment.schedules.teachers.name}}</td>
+                        <td>{{enrollment.schedules.subjects.name}}</td>
+                        <td>{{enrollment.schedules.start + "-" +enrollment.schedules.end + " " + enrollment.schedules.day}}</td>
+                        <td>{{enrollment.schedules.term}}</td>
+    
+                      </tr>
+                        {%endif%}
+                        {%endfor%}
+                
+                </tbody>
           </table>
+          {%endfor%}
           <form action="" method ="POST">
           <button class="btn btn-primary btn-sm mt-4" type="submit">Back</button>
           <button class="btn btn-primary btn-sm mt-4" type="submit">Comfirm</button>

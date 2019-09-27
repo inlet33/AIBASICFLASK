@@ -170,15 +170,17 @@ class Enrollment(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     student_id = db.Column(db.String(45),db.ForeignKey('students.id')) 
     schedule_id = db.Column(db.String(45),db.ForeignKey('schedules.id'))
-    created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
-    updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
+    start_year = db.Column(db.String(45))
+    end_year = db.Column(db.String(45))
 
     students =db.relationship("Student",back_populates = 'enrollments')
     schedules =db.relationship("Schedule",back_populates = 'enrollments')
 
-    def __init__(self,student_id,schedule_id):
+    def __init__(self,student_id,schedule_id,start_year,end_year):
         self.student_id = student_id
         self.schedule_id = schedule_id
+        self.start_year = start_year
+        self.end_year = end_year
 
     def check_enrollment_exist(self,date,term):
         return db.session.query(Enrollment).filter(Enrollment.date == date).filter(Enrollment.term == term).all()

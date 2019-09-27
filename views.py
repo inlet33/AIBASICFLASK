@@ -11,11 +11,14 @@ from .models.models import Student,Teacher,Course,Subject,Schedule,Enrollment,Co
 from wtforms.widgets import ListWidget,CheckboxInput
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 #Initialize LoginManager to use it's functions
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
 
 class RegisterForm(FlaskForm):
     username = StringField("Username", validators =[InputRequired(), Length(min=4, max=20)])
@@ -463,7 +466,10 @@ def enrollment_schdeule():
 
     if request.method == 'POST':
         for schedule in schedules:
-            enrollment = Enrollment(student_id=request.args.get('student_id'),schedule_id=schedule.id)
+            enrollment = Enrollment(student_id=request.args.get('student_id'),
+                                    schedule_id=schedule.id,
+                                    start_year = datetime.date.today().year,
+                                    end_year = datetime.date.today().year+1)
             db.session.add(enrollment)
             db.session.commit()
         return redirect('/enrollment')
@@ -473,8 +479,17 @@ def enrollment_schdeule():
 @app.route('/enrollment', methods=['GET','POST'])
 @login_required
 def enrollment():
-    enrollments= Student.query.join(Enrollment,Student.id ==Enrollment.student_id).all() 
-    return render_template('enrollment/enrollmentlist.html',enrollments = enrollments,user=current_user)
+    students= Student.query.join(Enrollment,Student.id ==Enrollment.student_id).all() 
+  
+    return render_template('enrollment/enrollmentlist.html',user=current_user,students = students)
+
+@app.route('/enrollmentview/<int:student_id>', methods=['GET','POST'])
+@login_required
+def enrollmentview(student_id):
+    enrollments = Enrollment.query.filter(Enrollment.student_id ==student_id)
+    enrollments_years = Enrollment.query.filter(Enrollment.student_id ==student_id)
+
+    return render_template('enrollment/enrollmentview.html',enrollments=enrollments,user=current_user,enrollments_years= enrollments_years)
 
 @app.route('/enrollmentdelete/<int:enrollment_id>')
 @login_required
@@ -497,13 +512,6 @@ def enrollmentupdate(enrollment_id):
         return redirect('/enrollment')
 
     return render_template('enrollment/enrollmentupdate.html',enrollment = enrollment)
-
-@app.route('/enrollmentview/<int:student_id>', methods=['GET','POST'])
-@login_required
-def enrollmentview(student_id):
-    enrollments = Enrollment.query.filter(Enrollment.student_id ==student_id)
-
-    return render_template('enrollment/enrollmentview.html',enrollments=enrollments,user=current_user)
 
 @app.route('/addcoursesection',methods= ['GET', 'POST'])
 @login_required

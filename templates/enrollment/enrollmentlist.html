@@ -10,6 +10,7 @@
       <button class="btn btn-info float-right col-2" type="submit">Search</button>
     </form>
     <a href="/addenrollment" class="btn btn-primary btn-sm float-right m-3">Add Enrollment</a>
+    
     <table class="table table-striped">
             <thead>
               <tr>
@@ -19,22 +20,26 @@
               </tr>
             </thead>
             <tbody>
-              
-                {% for student in enrollments:%}
+                {% for student in students:%}
+                
                 <tr>
                 <th scope="row">{{student.id}}</th>
                 <td>{{student.name}}</td>
+               
+
                 <td>
                     <a href="/enrollmentupdate/{{student.id}}" class="btn btn-primary btn-sm">Update</a>
                     <a href="/enrollmentdelete/{{student.id}}" class="btn btn-danger btn-sm">Delete</a>
                     <a href="/enrollmentview/{{student.id}}" class="btn btn-success btn-sm">View Schedule</a>
 
                 </td>
-              </tr>
+                </tr>
                 {%endfor%}
                            
             </tbody>
           </table>
+
+      
     
 </div>
 
