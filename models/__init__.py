@@ -1,3 +1,3 @@
-from .models import Student,Teacher,Subject,Course,Schedule,Enrollment,CourseSection
+from .models import Student,Teacher,Subject,Course,Schedule,Enrollment,CourseSection,User
 
-__all__ =["Student","Teacher","Subject","Course","Schedule","Enrollment","CourseSection"] #Add other models easily
+__all__ =["Student","Teacher","Subject","Course","Schedule","Enrollment","CourseSection","User"] #Add other models easily

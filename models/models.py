@@ -1,6 +1,25 @@
 from datetime import datetime
 from AIBASICFLASK.database import db
 from sqlalchemy.orm import relationship
+from sqlalchemy import or_
+from flask_login import UserMixin
+
+class User(UserMixin, db.Model):
+
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(45), nullable=False ,unique=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(100))
+
+    def __init__(self, username, email, password, role):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.role = role
+
 
 class Student(db.Model): 
 
@@ -47,7 +66,7 @@ class Course(db.Model):
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
 
-    schedules = db.relationship("Schedule",back_populates='courses')
+
     course_sections = db.relationship("CourseSection",back_populates='courses')
 
 
@@ -74,7 +93,6 @@ class CourseSection(db.Model):
 
     courses =db.relationship("Course",back_populates = 'course_sections')
     schedules = db.relationship("Schedule",back_populates='course_sections')
-
 
 class Subject(db.Model):
 
@@ -107,7 +125,6 @@ class Schedule(db.Model):
     start = db.Column(db.String(45), nullable = False)
     end = db.Column(db.String(45), nullable = False)
     day =db.Column(db.String(45), nullable = False)
-    course =db.Column(db.Integer,db.ForeignKey('courses.id'))
     teacher =db.Column(db.Integer,db.ForeignKey('teachers.id'))
     section_id =db.Column(db.Integer,db.ForeignKey('course_sections.id'))
     subject_id =db.Column(db.Integer,db.ForeignKey('subjects.id'))
@@ -115,7 +132,6 @@ class Schedule(db.Model):
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
 
-    courses =db.relationship("Course",back_populates = 'schedules')
     teachers =db.relationship("Teacher",back_populates = 'schedules')
     enrollments =db.relationship("Enrollment",back_populates = 'schedules')
     course_sections =db.relationship("CourseSection",back_populates = 'schedules')
@@ -126,14 +142,22 @@ class Schedule(db.Model):
         self.start = start
         self.end = end
         self.day = day
-        #self.course = course
         self.teacher = teacher
         self.section_id = section_id
         self.subject_id = subject_id
         self.term = term
 
-    def check_schedule_exist(self,start,teacher):
-        return db.session.query(Schedule).filter(Schedule.start == start).filter(Schedule.teacher == teacher).all()
+    def check_schedule_exist(self,start, end,section_id,term):
+        return db.session.query(Schedule).filter(Schedule.start >= start, 
+                                                 Schedule.end <= end,
+                                                 Schedule.term == term,
+                                                 Schedule.section_id == section_id).all()
+
+    def check_class_subject_exist(self,subject_id,section_id,term):
+        return db.session.query(Schedule).filter(Schedule.subject_id == subject_id, 
+                                                 Schedule.section_id == section_id,
+                                                 Schedule.term == term).all()
+
 
     @staticmethod
     def search_schedule(day):
@@ -144,17 +168,17 @@ class Enrollment(db.Model):
     __tablename__ = 'enrollments'
 
     id = db.Column(db.Integer,primary_key = True)
-    name = db.Column(db.String(45),db.ForeignKey('students.id')) 
-    date = db.Column(db.String(45),db.ForeignKey('schedules.id'))
+    student_id = db.Column(db.String(45),db.ForeignKey('students.id')) 
+    schedule_id = db.Column(db.String(45),db.ForeignKey('schedules.id'))
     created_at = db.Column(db.DateTime,nullable= False, default = datetime.now)
     updated_at = db.Column(db.DateTime,nullable= False, default = datetime.now,onupdate = datetime.now)
 
     students =db.relationship("Student",back_populates = 'enrollments')
     schedules =db.relationship("Schedule",back_populates = 'enrollments')
 
-    def __init__(self,name,date):
-        self.name = name
-        self.date = date
+    def __init__(self,student_id,schedule_id):
+        self.student_id = student_id
+        self.schedule_id = schedule_id
 
     def check_enrollment_exist(self,date,term):
         return db.session.query(Enrollment).filter(Enrollment.date == date).filter(Enrollment.term == term).all()

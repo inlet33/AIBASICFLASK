@@ -2,12 +2,6 @@
 {%block content%}
 
 <div class="container">
-    <hr>
-    <p class="lead"><strong>Student Name: </strong>{{ student.name }}</p>
-    
-  
-    <hr>
-
     <h3 class="text-center">Enrollment</h3>
     
     <table class="table table-striped">
@@ -17,19 +11,19 @@
                 <th scope="col">teacher</th>
                 <th scope="col">subject</th>
                 <th scope="col">schedule</th>
+                <th scope="col">term</th>
               </tr>
             </thead>
             <tbody>
               
-                {% for schedule in schedules:%}
-                <tr>
-                <th scope="row">{{schedule.id}}</th>
-                <td>{{schedule.teachers.name}}</td>
-                <td>{{schedule.subjects.name}}</td>
-                <td>{{schedule.start + "-" +schedule.end + " " + schedule.day}}</td>
-                
-              </tr>
-                {%endfor%}
+                    {% for enrollment in enrollments:%}
+                    <tr>
+                    <td>{{enrollment.schedules.teachers.name}}</td>
+                    <td>{{enrollment.schedules.subjects.name}}</td>
+                    <td>{{enrollment.schedules.start + "-" +enrollment.schedules.end + " " + enrollment.schedules.day}}</td>
+                    
+                  </tr>
+                    {%endfor%}
             
             </tbody>
           </table>
@@ -38,4 +32,5 @@
           <button class="btn btn-primary btn-sm mt-4" type="submit">Comfirm</button>
         </form>
 </div>
+
 {%endblock%}

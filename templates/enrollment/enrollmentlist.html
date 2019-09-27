@@ -4,6 +4,7 @@
 
 <div class="container">
     <h3 class="text-center">Enrollment</h3>
+    
     <form class="row" action="" method="POST">
       <input type="text" class="form-contral col-10" name="search">
       <button class="btn btn-info float-right col-2" type="submit">Search</button>
@@ -14,21 +15,20 @@
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Student Name</th>
-                <th scope="col">Date</th>
-                <th scope="col">Term</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               
-                {% for enrollment in enrollments:%}
+                {% for student in enrollments:%}
                 <tr>
-                <th scope="row">{{enrollment.id}}</th>
-                <td>{{enrollment.students.name}}</td>
-                <td>{{enrollment.schedules.start + "-" +enrollment.schedules.end + " " + enrollment.schedules.day}}</td>
+                <th scope="row">{{student.id}}</th>
+                <td>{{student.name}}</td>
                 <td>
-                    <a href="/enrollmentupdate/{{enrollment.id}}" class="btn btn-primary btn-sm">Update</a>
-                    <a href="/enrollmentdelete/{{enrollment.id}}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="/enrollmentupdate/{{student.id}}" class="btn btn-primary btn-sm">Update</a>
+                    <a href="/enrollmentdelete/{{student.id}}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="/enrollmentview/{{student.id}}" class="btn btn-success btn-sm">View Schedule</a>
+
                 </td>
               </tr>
                 {%endfor%}
